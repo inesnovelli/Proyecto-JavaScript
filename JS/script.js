@@ -1,7 +1,6 @@
 const PRECIO_DIARIO = 15000;
 let reservas = JSON.parse(localStorage.getItem('reservas')) || [];
 
-// Inicialización
 const form = document.getElementById('reservaForm');
 if (form) {
   form.addEventListener('submit', manejarReserva);
@@ -10,7 +9,6 @@ if (form) {
 function manejarReserva(event) {
   event.preventDefault();
   
-  // Obtener valores del formulario
   const nombre = document.getElementById('nombre').value.trim();
   const email = document.getElementById('email').value.trim();
   const telefono = document.getElementById('telefono').value.trim();
@@ -19,7 +17,6 @@ function manejarReserva(event) {
   const salida = document.getElementById('salida').value;
   const habitacion = document.getElementById('habitacion').value;
 
-  // Validaciones básicas
   if (!nombre || !email || !telefono || !habitacion || isNaN(cantidad)) {
     mostrarError("Complete todos los campos.");
     return;
@@ -40,20 +37,17 @@ function manejarReserva(event) {
     return;
   }
 
-  // Validar fechas
   const conflicto = buscarConflictoReserva(habitacion, entrada, salida);
   if (conflicto) {
     mostrarError(`La ${habitacion} no se encuentra disponible desde ${conflicto.entrada} hasta ${conflicto.salida}. Por favor elige otra fecha.`);
     return;
   }
 
-  // Calcular estadías y total
   const datos = calcularDiasYTotal(entrada, salida);
   if (!datos) return;
 
   datos.habitacion = habitacion;
   
-  // Crear reserva
   const reserva = {
     nombre: nombre,
     email: email,
@@ -66,7 +60,6 @@ function manejarReserva(event) {
     total: datos.total
   };
 
-  // Mostrar resumen y guardar
   mostrarResumen(reserva);
   guardarReserva(reserva);
   document.getElementById('reservaForm').reset();
@@ -162,10 +155,6 @@ function mostrarError(mensaje) {
   const errorDiv = document.getElementById('error');
   errorDiv.textContent = mensaje;
   errorDiv.style.display = 'block';
-  
-  setTimeout(() => {
-    errorDiv.style.display = 'none';
-  }, 5000);
 }
 
 function validarEmail(email) {

@@ -3,7 +3,6 @@ const ADMIN_CREDENTIALS = {
   pass: "posada1234"
 };
 
-// Iniciar Sesión
 document.getElementById('loginAdmin')?.addEventListener('submit', function(e) {
   e.preventDefault();
   
@@ -50,9 +49,6 @@ function cargarReservasAdmin(reservasFiltradas = null) {
       <p>Personas: ${reserva.personas}</p>
       <p>Fechas: ${reserva.entrada} a ${reserva.salida}</p>
       <p>Total: $${reserva.total}</p>
-      ${reserva.huespedes && reserva.huespedes.length > 0 ? `
-      <p>Huéspedes: ${reserva.huespedes.map(h => h.nombre).join(', ')}</p>
-      ` : ''}
       <button onclick="eliminarReservaAdmin(${index})">Eliminar</button>
     `;
     container.appendChild(reservaDiv);
