@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel de Administración</title>
+  <link rel="stylesheet" href="CSS/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Genos:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header>
+    <img src="image/posada logo.png" alt="logo-posada" class="logo">
+    <div class="titulo">
+      <h1>PANEL DE ADMINISTRACIÓN</h1>
+    </div>
+  </header>
+
+  <main>
+    <div id="loginForm" class="form-container">
+      <h2>Iniciar Sesión</h2>
+      <form id="loginAdmin">
+        <div>
+          <label for="adminUser">Usuario:</label>
+          <input type="text" id="adminUser" required>
+        </div>
+        <div>
+          <label for="adminPass">Contraseña:</label>
+          <input type="password" id="adminPass" required>
+        </div>
+        <button type="submit">Acceder</button>
+      </form>
+      <a href="index.html" class="back-button">Volver a Reservas</a>
+    </div>
+
+    <div id="adminPanel" class="hidden">
+      <div class="admin-actions">
+        <a href="index.html" class="back-button">Volver a Reservas</a>
+        <button id="logoutBtn">Cerrar Sesión</button>
+      </div>
+      
+      <div class="filtros">
+        <h2>Gestión de Reservas</h2>
+        <div>
+          <label for="filtroHabitacion">Filtrar por habitación:</label>
+          <select id="filtroHabitacion">
+            <option value="">Todas</option>
+            <option value="Lata Verde">Lata Verde</option>
+            <option value="Lata Naranja">Lata Naranja</option>
+            <option value="Lata Blanca">Lata Blanca</option>
+          </select>
+        </div>
+        <div>
+          <label for="filtroFecha">Filtrar por fecha:</label>
+          <input type="date" id="filtroFecha">
+        </div>
+        <button id="aplicarFiltro">Aplicar Filtros</button>
+      </div>
+      
+      <div id="adminReservas"></div>
+      <div class="stats">
+        <h3>Estadísticas</h3>
+        <p id="totalReservas">Total reservas: 0</p>
+        <p id="ingresosTotales">Ingresos totales: $0</p>
+      </div>
+    </div>
+  </main>
+
+  <script src="JS/admin.js"></script>
+</body>
+</html>

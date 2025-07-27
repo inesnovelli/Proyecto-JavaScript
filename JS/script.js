@@ -1,24 +1,37 @@
 const PRECIO_DIARIO = 15000;
 let reservas = JSON.parse(localStorage.getItem('reservas')) || [];
 
-
-document.addEventListener('DOMContentLoaded', function() {
-  const form = document.getElementById('reservaForm');
+// Inicialización
+const form = document.getElementById('reservaForm');
+if (form) {
   form.addEventListener('submit', manejarReserva);
-  cargarReservas();
-});
+}
 
 function manejarReserva(event) {
   event.preventDefault();
   
+  // Obtener valores del formulario
   const nombre = document.getElementById('nombre').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const telefono = document.getElementById('telefono').value.trim();
   const cantidad = parseInt(document.getElementById('personas').value);
   const entrada = document.getElementById('entrada').value;
   const salida = document.getElementById('salida').value;
   const habitacion = document.getElementById('habitacion').value;
 
-  if (!nombre || !habitacion || isNaN(cantidad)) {
+  // Validaciones básicas
+  if (!nombre || !email || !telefono || !habitacion || isNaN(cantidad)) {
     mostrarError("Complete todos los campos.");
+    return;
+  }
+
+  if (!validarEmail(email)) {
+    mostrarError("Ingrese un email válido.");
+    return;
+  }
+
+  if (!validarTelefono(telefono)) {
+    mostrarError("Ingrese un teléfono válido (10-15 dígitos).");
     return;
   }
 
@@ -27,33 +40,44 @@ function manejarReserva(event) {
     return;
   }
 
+  // Validar fechas
   const conflicto = buscarConflictoReserva(habitacion, entrada, salida);
   if (conflicto) {
     mostrarError(`La ${habitacion} no se encuentra disponible desde ${conflicto.entrada} hasta ${conflicto.salida}. Por favor elige otra fecha.`);
     return;
   }
 
-  const huesped = { nombre: nombre, personas: cantidad };
+  // Calcular estadías y total
   const datos = calcularDiasYTotal(entrada, salida);
+  if (!datos) return;
 
-  if (datos) {
-    datos.habitacion = habitacion;
-    mostrarResumen(huesped, datos);
-    guardarReserva(huesped, datos).then(() => {
-      cargarReservas();
-      document.getElementById('reservaForm').reset();
-    });
-  }
+  datos.habitacion = habitacion;
+  
+  // Crear reserva
+  const reserva = {
+    nombre: nombre,
+    email: email,
+    telefono: telefono,
+    personas: cantidad,
+    habitacion: habitacion,
+    entrada: datos.entrada,
+    salida: datos.salida,
+    noches: datos.dias,
+    total: datos.total
+  };
+
+  // Mostrar resumen y guardar
+  mostrarResumen(reserva);
+  guardarReserva(reserva);
+  document.getElementById('reservaForm').reset();
 }
 
-// función para detectar errores con las fechas
 function buscarConflictoReserva(habitacion, nuevaEntradaStr, nuevaSalidaStr) {
   const nuevaEntrada = new Date(nuevaEntradaStr);
   const nuevaSalida = new Date(nuevaSalidaStr);
 
   for (const reserva of reservas) {
     if (reserva.habitacion === habitacion) {
-      // convierte fechas guardadas (en formato dd/mm/aaaa)
       const [diaE, mesE, anioE] = reserva.entrada.split('/');
       const [diaS, mesS, anioS] = reserva.salida.split('/');
       
@@ -104,57 +128,57 @@ function calcularDiasYTotal(entradaStr, salidaStr) {
   };
 }
 
-function mostrarResumen(huesped, datosReserva) {
+function mostrarResumen(reserva) {
   const resumenDiv = document.getElementById('resumen');
-  resumenDiv.innerHTML = `
-    <h3>Reserva confirmada para ${huesped.nombre}</h3>
-    <p>Habitación: ${datosReserva.habitacion}</p>
-    <p>Personas: ${huesped.personas}</p>
-    <p>Entrada: ${datosReserva.entrada}</p>
-    <p>Salida: ${datosReserva.salida}</p>
-    <p>Noches: ${datosReserva.dias}</p>
-    <p>Total: $${datosReserva.total}</p>
+  resumenDiv.innerHTML = '';
+  
+  const comprobanteDiv = document.createElement('div');
+  comprobanteDiv.className = 'comprobante';
+  comprobanteDiv.innerHTML = `
+    <h3>COMPROBANTE DE RESERVA</h3>
+    <p><strong>Posada de los Topos</strong></p>
+    <p>Fecha: ${new Date().toLocaleDateString()}</p>
+    
+    <h4>Datos del reservante</h4>
+    <p>Nombre: ${reserva.nombre}</p>
+    <p>Email: ${reserva.email}</p>
+    <p>Teléfono: ${reserva.telefono}</p>
+    
+    <h4>Detalles de la reserva</h4>
+    <p>Habitación: ${reserva.habitacion}</p>
+    <p>Personas: ${reserva.personas}</p>
+    <p>Entrada: ${reserva.entrada}</p>
+    <p>Salida: ${reserva.salida}</p>
+    <p>Noches: ${reserva.noches}</p>
+    <p>Total: $${reserva.total}</p>
+    
+    <button onclick="window.print()">Imprimir Comprobante</button>
   `;
+  
+  resumenDiv.appendChild(comprobanteDiv);
 }
 
 function mostrarError(mensaje) {
   const errorDiv = document.getElementById('error');
   errorDiv.textContent = mensaje;
-  setTimeout(() => errorDiv.textContent = '', 5000);
+  errorDiv.style.display = 'block';
+  
+  setTimeout(() => {
+    errorDiv.style.display = 'none';
+  }, 5000);
 }
 
-function guardarReserva(huesped, datos) {
-  return new Promise((resolve) => {
-    reservas.push({
-      nombre: huesped.nombre,
-      personas: huesped.personas,
-      habitacion: datos.habitacion,
-      entrada: datos.entrada,
-      salida: datos.salida,
-      noches: datos.dias,
-      total: datos.total
-    });
-    
-    localStorage.setItem('reservas', JSON.stringify(reservas));
-    resolve();
-  });
+function validarEmail(email) {
+  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return re.test(email);
 }
 
-function cargarReservas() {
-  const listaReservas = document.getElementById('listaReservas');
-  listaReservas.innerHTML = reservas.map((reserva, index) => `
-    <div class="reserva">
-      <h4>${reserva.nombre} - ${reserva.habitacion}</h4>
-      <p>Personas: ${reserva.personas}</p>
-      <p>Fechas: ${reserva.entrada} a ${reserva.salida}</p>
-      <p>Total: $${reserva.total}</p>
-      <button onclick="eliminarReserva(${index})">Eliminar</button>
-    </div>
-  `).join('');
+function validarTelefono(tel) {
+  const re = /^[0-9]{10,15}$/;
+  return re.test(tel);
 }
 
-function eliminarReserva(index) {
-  reservas.splice(index, 1);
+function guardarReserva(reserva) {
+  reservas.push(reserva);
   localStorage.setItem('reservas', JSON.stringify(reservas));
-  cargarReservas();
 }

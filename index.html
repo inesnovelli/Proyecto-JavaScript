@@ -8,26 +8,32 @@
   <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Genos:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 </head>
 <body>
-
   <header>
-
     <img src="image/posada logo.png" alt="logo-posada" class="logo">
-
     <div class="titulo">
       <h1>POSADA DE LOS TOPOS</h1>
     </div>
-
   </header>
 
   <main>
     <form id="reservaForm">
       <div>
-        <label for="nombre">Nombre:</label>
+        <label for="nombre">Nombre completo:</label>
         <input type="text" id="nombre" required>
       </div>
       
       <div>
-        <label for="personas">Personas (máx 3):</label>
+        <label for="email">Email:</label>
+        <input type="email" id="email" required>
+      </div>
+      
+      <div>
+        <label for="telefono">Teléfono:</label>
+        <input type="tel" id="telefono" required>
+      </div>
+      
+      <div>
+        <label for="personas">Número de personas (máx 3):</label>
         <input type="number" id="personas" min="1" max="3" required>
       </div>
       
@@ -42,27 +48,24 @@
       </div>
       
       <div>
-        <label for="entrada">Fecha entrada:</label>
+        <label for="entrada">Fecha de entrada:</label>
         <input type="date" id="entrada" required>
       </div>
       
       <div>
-        <label for="salida">Fecha salida:</label>
+        <label for="salida">Fecha de salida:</label>
         <input type="date" id="salida" required>
       </div>
       
       <button type="submit">Reservar</button>
     </form>
     
-    <div id="error" class="error"></div>
+    <div id="error" class="error" style="display: none;"></div>
     <div id="resumen" class="resumen"></div>
-    
-    <h2>Reservas existentes</h2>
-    <div id="listaReservas"></div>
+
+    <a href="admin.html" class="admin-link">Acceso administrador</a>
   </main>
 
   <script src="JS/script.js"></script>
-
-  
 </body>
 </html>
